@@ -1,14 +1,27 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../assets/Chat.css'
 import { Avatar, IconButton } from '@material-ui/core'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined'
-import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
-import MicIcon from '@material-ui/icons/Mic';
+import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
+import MicIcon from '@material-ui/icons/Mic'
+import { useParams } from 'react-router-dom'
+import db from '../firebase'
 
 function Chat() {
 
+    const { roomId } = useParams()
     const [input, setInput] = useState("")
+    const [roomName, setRoomName] = useState("")
+
+    useEffect( () => {
+        if(roomId) {
+            db.collection('rooms').doc(roomId).onSnapshot( snapshot => (
+                setRoomName(snapshot.data().name)
+            ))
+        }
+    }, [roomId])
+
     const sendMessage = (e) => {
         e.preventDefault()
         console.log(`Your input is >> ${input}`)
@@ -19,7 +32,7 @@ function Chat() {
             <div className="app_chat_header">
                 <Avatar />
                 <div className="app_chat_header_info">
-                    <h3>Room Name</h3>
+                    <h3>{roomName}</h3>
                     <p>Last Seen</p>
                 </div>
                 <div className="app_chat_header_right">
